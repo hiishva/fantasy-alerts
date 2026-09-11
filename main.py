@@ -3,7 +3,8 @@ import requests
 
 ## CONFIGS
 ROSTER_FILE = "roster.json"
-INJURY_URL = ("https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries")
+INJURY_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
+SCHEDULE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 ## INJURY STATUSES
 INJURY_STATUSES = {
@@ -35,8 +36,26 @@ def get_injury_data():
     except requests.RequestException as e:
         print(f"ERROR - Failed to fetch injury data: {e}")
         return {}
-        
 
+## GET BYE WEEK DATA
+def get_schedule_data():
+    try:
+        response = requests.get(
+            SCHEDULE_URL,
+            params={
+                "limit": 1000,
+                "dates": 2026,
+                "seasontype": 2,
+                "week": 1
+            },
+            timeout=10
+        )
+
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as err:
+        print(f"ERROR - Could not retrieve schedule data: {err}")
+        return {}
 ## INJURY LOOKUP
 def build_injury_lookup(data):
     injury_lookup = {}
@@ -50,11 +69,25 @@ def build_injury_lookup(data):
                 injury_lookup[player_name.lower()] = status.upper()
     return injury_lookup
 
+## LIST OF TEAMS PLAYING
+def build_teams_playing(schedule_data):
+    teams_playing = set()
+    for event in schedule_data.get("events", []):
+        for competition in event.get("competitions", []):
+            for competitor in competition.get("competitors", []):
+                team = competitor.get("team", {})
+                abbr = team.get("abbreviation")
+                if abbr:
+                    teams_playing.add(abbr.upper())
+    return teams_playing
+
+
 ## CHECK ROSTER
-def check_roster(roster, injury_lookup):
+def check_roster(roster, injury_lookup, teams_playing):
     alerts = {}
     for manager, roster in roster.items():
         manager_alerts = []
+        bye_count = 0
 
         starters = roster.get("starters", [])
         for player in starters:
@@ -62,7 +95,19 @@ def check_roster(roster, injury_lookup):
             team = player.get("team")
             position = player.get("position")
 
-            if not player_name:
+            if not player_name or not team:
+                continue
+            team = team.upper()
+
+            ### CHECK BYE WEEK
+            if team not in teams_playing:
+                manager_alerts.append({
+                    "player": player_name,
+                    "team": team,
+                    "position": position,
+                    "reason": "BYE WEEK"
+                })
+                bye_count += 1
                 continue
 
             ### CHECK INJURY
@@ -77,7 +122,10 @@ def check_roster(roster, injury_lookup):
                     "position": position,
                     "reason": f"INJURY: {injury_status}"
                 })
-        alerts[manager] = manager_alerts
+        alerts[manager] = {
+            "alerts": manager_alerts,
+            "bye_count": bye_count
+        }
     return alerts
 
 ## CREATE MESSAGE
@@ -85,7 +133,10 @@ def create_message(alerts, week):
     week = week if week else "N/A"
     msg = [f"Week {week} Lineup Check:"]
 
-    for manager, manager_alerts in alerts.items():
+    for manager, manager_data in alerts.items():
+        manager_alerts = manager_data["alerts"]
+        bye_count = manager_data["bye_count"]
+
         if manager_alerts:
             msg.append(f"🚨{manager}:")
 
@@ -93,11 +144,16 @@ def create_message(alerts, week):
                 player = alert.get("player", "Unknown Player")
                 reason = alert.get("reason", "Needs Checking")
                 msg.append(f"* {player} - {reason}")
-            msg.append("")
+            
         else:
             msg.append(f"✅{manager}:")
             msg.append(f"* No players flagged")
-            msg.append("")
+            
+        if bye_count == 0:
+            msg.append("* No starters on bye week")
+        else:
+            msg.append(f"* {bye_count} starter(s) on bye week")
+        msg.append("")
     msg.append(
         "⚠️ Please review your lineup and make any necessary changes."
     )
@@ -109,9 +165,14 @@ def main():
     print(f"INFO - Week {week} selected\n")
     rosters = load_roster()
 
+    ### Injury data
     injury_data = get_injury_data()
     injury_lookup = build_injury_lookup(injury_data)
-    alerts = check_roster(rosters, injury_lookup)
+
+    ### Schedule data
+    schedule_data = get_schedule_data()
+    teams_playing = build_teams_playing(schedule_data)
+    alerts = check_roster(rosters, injury_lookup, teams_playing)
 
     print("INFO - Alerts generated\n")
     print("INFO - Creating message...\n")
