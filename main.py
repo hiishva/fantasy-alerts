@@ -38,7 +38,7 @@ def get_injury_data():
         return {}
 
 ## GET BYE WEEK DATA
-def get_schedule_data():
+def get_schedule_data(week=1):
     try:
         response = requests.get(
             SCHEDULE_URL,
@@ -46,7 +46,7 @@ def get_schedule_data():
                 "limit": 1000,
                 "dates": 2026,
                 "seasontype": 2,
-                "week": 1
+                "week": week
             },
             timeout=10
         )
@@ -170,7 +170,7 @@ def main():
     injury_lookup = build_injury_lookup(injury_data)
 
     ### Schedule data
-    schedule_data = get_schedule_data()
+    schedule_data = get_schedule_data(week)
     teams_playing = build_teams_playing(schedule_data)
     alerts = check_roster(rosters, injury_lookup, teams_playing)
 
