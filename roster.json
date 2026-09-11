@@ -1,0 +1,341 @@
+{
+    "Ishva": {
+        "starters": [
+            {
+                "name": "Jalen Hurts",
+                "team": "PHI",
+                "position": "QB"
+            },
+            {
+                "name": "Christian McCaffrey",
+                "team": "SF",
+                "position": "RB"
+            },
+            {
+                "name": "Saquon Barkley",
+                "team": "PHI",
+                "position": "RB"
+            },
+            {
+                "name": "A.J. Brown",
+                "team": "NE",
+                "position": "WR"
+            },
+            {
+                "name": "Jaxon Smith-Njigba",
+                "team": "SEA",
+                "position": "WR"
+            },
+            {
+                "name": "Travis Kelce",
+                "team": "KC",
+                "position": "TE"
+            },
+            {
+                "name": "George Pickens",
+                "team": "DAL",
+                "position": "WR"
+            },
+            {
+                "name": "Rhamondre Stevenson",
+                "team": "NE",
+                "position": "RB"
+            },
+            {
+                "name": "Texans D/ST",
+                "team": "HOU",
+                "position": "D/ST"
+            },
+            {
+                "name": "Ka'imi Fairbairn",
+                "team": "HOU",
+                "position": "K"
+            }
+        ],
+        "bench": [
+            {
+                "name": "TreVeyon Henderson",
+                "team": "NE",
+                "position": "RB"
+            },
+            {
+                "name": "Joe Burrow",
+                "team": "CIN",
+                "position": "QB"
+            },
+            {
+                "name": "George Kittle",
+                "team": "SF",
+                "position": "TE"
+            },
+            {
+                "name": "Davante Adams",
+                "team": "LAR",
+                "position": "WR"
+            },
+            {
+                "name": "DJ Moore",
+                "team": "BUF",
+                "position": "WR"
+            }
+        ]
+    },
+    "Diya" : {
+        "starters": [
+            {
+                "name": "Drake Maye",
+                "team": "NE",
+                "position": "QB"
+            },
+            {
+                "name": "Jahmyr Gibbs",
+                "team": "DET",
+                "position": "RB"
+            },
+            {
+                "name": "Bijan Robinson",
+                "team": "ATL",
+                "position": "RB"
+            },
+            {
+                "name": "Amon-Ra St. Brown",
+                "team": "DET",
+                "position": "WR"
+            },
+            {
+                "name": "CeeDee Lamb",
+                "team": "DAL",
+                "position": "WR"
+            },
+            {
+                "name": "Colston Loveland",
+                "team": "CHI",
+                "position": "TE"
+            },
+            {
+                "name": "Chris Olave",
+                "team": "NO",
+                "position": "WR"
+            },
+            {
+                "name": "Chase Brown",
+                "team": "CIN",
+                "position": "RB"
+            },
+            {
+                "name": "Steelers D/ST",
+                "team": "PIT",
+                "position": "D/ST"
+            },
+            {
+                "name": "Jason Myers",
+                "team": "SEA",
+                "position": "K"
+            }
+        ],
+        "bench": [
+            {
+                "name": "Emeka Egbuka",
+                "team": "TB",
+                "position": "WR"
+            },
+            {
+                "name": "Lamar Jackson",
+                "team": "BAL",
+                "position": "QB"
+            },
+            {
+                "name": "Ladd McConkey",
+                "team": "LAC",
+                "position": "WR"
+            },
+            {
+                "name": "Kyle Pitts Sr.",
+                "team": "ATL",
+                "position": "TE"
+            },
+            {
+                "name": "Kyren Williams",
+                "team": "LAR",
+                "position": "RB"
+            },
+            {
+                "name": "Quinshon Judkins",
+                "team": "CLE",
+                "position": "RB"
+            }
+        ]
+    },
+    "Khushi": {
+        "starters": [
+            {
+                "name": "Josh Allen",
+                "team": "BUF",
+                "position": "QB"
+            },
+            {
+                "name": "James Cook III",
+                "team": "BUF",
+                "position": "RB"
+            },
+            {
+                "name": "De'Von Achane",
+                "team": "MIA",
+                "position": "RB"
+            },
+            {
+                "name": "Ja'Marr Chase",
+                "team": "CIN",
+                "position": "WR"
+            },
+            {
+                "name": "Justin Jefferson",
+                "team": "MIN",
+                "position": "WR"
+            },
+            {
+                "name": "Trey McBride",
+                "team": "ARI",
+                "position": "TE"
+            },
+            {
+                "name": "Drake London",
+                "team": "ATL",
+                "position": "WR"
+            },
+            {
+                "name": "Nico Collins",
+                "team": "HOU",
+                "position": "WR"
+            },
+            {
+                "name": "Broncos D/ST",
+                "team": "DEN",
+                "position": "D/ST"
+            },
+            {
+                "name": "Cameron Dicker",
+                "team": "LAC",
+                "position": "K"
+            }
+        ],
+        "bench": [
+            {
+                "name": "Ashton Jeanty",
+                "team": "LV",
+                "position": "RB"
+            },
+            {
+                "name": "Kenneth Walker III",
+                "team": "KC",
+                "position": "WR"
+            },
+            {
+                "name": "Rashee Rice",
+                "team": "KC",
+                "position": "WR"
+            },
+            {
+                "name": "Garrett Wilson",
+                "team": "NYJ",
+                "position": "WR"
+            },
+            {
+                "name": "Jaxon Dart",
+                "team": "NYG",
+                "position": "QB"
+            },
+            {
+                "name": "Malik Nabers",
+                "team": "NYG",
+                "position": "WR"
+            }
+        ]
+    },
+    "Shalika":{
+        "starters": [
+            {
+                "name": "Dak Prescott",
+                "team": "DAL",
+                "position": "QB"
+            },
+            {
+                "name": "Johnathan Taylor",
+                "team": "IND",
+                "position": "RB"
+            },
+            {
+                "name": "Derrick Henry",
+                "team": "BAL",
+                "position": "RB"
+            },
+            {
+                "name": "Puka Nacua",
+                "team": "LAR",
+                "position": "WR"
+            },
+            {
+                "name": "Courtland Sutton",
+                "team": "DEN",
+                "position": "WR"
+            },
+            {
+                "name": "Brock Bowers",
+                "team": "LV",
+                "position": "TE"
+            },
+            {
+                "name": "Omarion Hampton",
+                "team": "LAC",
+                "position": "RB"
+            },
+            {
+                "name": "Tony Pollard",
+                "team": "TEN",
+                "position": "RB"
+            },
+            {
+                "name": "Seahawks D/ST",
+                "team": "SEA",
+                "position": "D/ST"
+            },
+            {
+                "name": "Brandon Aubrey",
+                "team": "DAL",
+                "position": "K"
+            }
+        ],
+        "bench": [
+            {
+                "name": "Jeremiyah Love",
+                "team": "ARI",
+                "position": "RB"
+            },
+            {
+                "name": "Jayden Daniels",
+                "team": "WSH",
+                "position": "QB"
+            },
+            {
+                "name": "Javonte Williams",
+                "team": "DAL",
+                "position": "RB"
+            },
+            {
+                "name": "DeVonta Smith",
+                "team": "PHI",
+                "position": "WR"
+            },
+            {
+                "name": "Tyler Warren",
+                "team": "IND",
+                "position": "TE"
+            },
+            {
+                "name": "Tetairoa McMillan",
+                "team": "CAR",
+                "position": "WR"
+            }
+        ]
+    }
+}
