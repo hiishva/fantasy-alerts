@@ -11,7 +11,7 @@ INJURY_STATUSES = {
     "QUESTIONABLE",
     "DOUBTFUL",
     "OUT",
-    "INJURY_RESERVE",
+    "INJURED_RESERVE",
     "IR"
 }
 
@@ -66,7 +66,8 @@ def build_injury_lookup(data):
             status = injury.get("status", "")
 
             if player_name and status:
-                injury_lookup[player_name.lower()] = status.upper()
+                normalized_status = status.upper().replace(" ", "_")
+                injury_lookup[player_name.lower()] = normalized_status
     return injury_lookup
 
 ## LIST OF TEAMS PLAYING
