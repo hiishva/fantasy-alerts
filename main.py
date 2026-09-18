@@ -1,10 +1,24 @@
 import json
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ## CONFIGS
-ROSTER_FILE = "roster.json"
+# ROSTER_FILE = "roster.json"
+
+LEAGUE_ID = os.getenv("ESPN_LEAGUE_ID")
+ESPN_SWID = os.getenv("ESPN_SWID")
+ESPN_S2 = os.getenv("ESPN_S2")
+ESPN_YEAR = 2026
+
 INJURY_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
 SCHEDULE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+ESPN_URL = (
+    f"https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/"
+    f"seasons/{ESPN_YEAR}/segments/0/leagues/{LEAGUE_ID}"
+)
 
 ## INJURY STATUSES
 INJURY_STATUSES = {
@@ -15,17 +29,121 @@ INJURY_STATUSES = {
     "IR"
 }
 
+NFL_TEAM_ABBREVIATIONS = {
+    1: "ATL", 2: "BUF", 3: "CHI", 4: "CIN", 5: "CLE",
+    6: "DAL", 7: "DEN", 8: "DET", 9: "GB", 10: "TEN",
+    11: "IND", 12: "KC", 13: "LV", 14: "LAR", 15: "MIA",
+    16: "MIN", 17: "NE", 18: "NO", 19: "NYG", 20: "NYJ",
+    21: "PHI", 22: "ARI", 23: "PIT", 24: "LAC", 25: "SF",
+    26: "SEA", 27: "TB", 28: "WSH", 29: "CAR", 30: "JAX",
+    33: "BAL", 34: "HOU"
+}
+
 ## LOAD ROSTER
-def load_roster():
+def get_espn_league_data():
+    cookies = {
+        "SWID": ESPN_SWID,
+        "espn_s2": ESPN_S2
+    }
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/140.0.0.0 Safari/537.36"
+        )
+    }
+
     try:
-        with open(ROSTER_FILE, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print(f"ERROR - Could not find {ROSTER_FILE}.")
-        raise
-    except json.JSONDecodeError:
-        print(f"ERROR - {ROSTER_FILE} contains invalid JSON")
-        raise
+        response = requests.get(
+            ESPN_URL,
+            cookies=cookies,
+            headers=headers,
+            params={
+                "view": ["mTeam", "mRoster"]
+            },
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as err:
+        print(f"ERROR - Could not retrieve ESPN league data: {err}")
+        return {}
+
+def build_rosters(data):
+    rosters = {}
+    for team in data.get("teams", []):
+        team_name = team.get("name", "Unknown Team")
+        starters = []
+        bench = []
+        ir_players = []
+
+        roster_entries = team.get("roster", {}).get("entries", [])
+        for entry in roster_entries:
+            player_pool_entry = entry.get("playerPoolEntry", {})
+            player = player_pool_entry.get("player", {})
+            player_name = player.get("fullName")
+            pro_team = NFL_TEAM_ABBREVIATIONS.get(player.get("proTeamId"))
+            position_id = player.get("defaultPositionId")
+
+            if not player_name:
+                continue
+
+            player_info = {
+                "name": player_name,
+                "team": pro_team,
+                "position": position_id
+            }
+
+            lineup_slot = entry.get("lineupSlotId")
+
+            # ESPN lineupSlotId 20 = bench, 21 = injured reserve
+            if lineup_slot == 20:
+                bench.append(player_info)
+            elif lineup_slot == 21:
+                ir_players.append(player_info)
+
+            else:
+                starters.append(player_info)
+
+        rosters[team_name] = {
+            "starters": starters,
+            "bench": bench,
+            "ir": ir_players
+        }
+
+    return rosters
+
+def build_standings(data):
+    standings = []
+
+    for team in data.get("teams", []):
+        record = team.get("record", {}).get("overall", {})
+        standings.append({
+            "team": team.get("name", "Unknown Team").strip(),
+            "wins": record.get("wins", 0),
+            "losses": record.get("losses", 0),
+            "ties": record.get("ties", 0),
+            "points": team.get("points", 0)
+        })
+
+    standings.sort(
+        key=lambda team: (team["wins"], team["points"]),
+        reverse=True
+    )
+
+    return standings
+
+# def load_roster():
+#     try:
+#         with open(ROSTER_FILE, "r") as f:
+#             return json.load(f)
+#     except FileNotFoundError:
+#         print(f"ERROR - Could not find {ROSTER_FILE}.")
+#         raise
+#     except json.JSONDecodeError:
+#         print(f"ERROR - {ROSTER_FILE} contains invalid JSON")
+#         raise
 
 ## GET INJURY DATA
 def get_injury_data():
@@ -130,7 +248,7 @@ def check_roster(roster, injury_lookup, teams_playing):
     return alerts
 
 ## CREATE MESSAGE
-def create_message(alerts, week):
+def create_message(alerts, week, standings):
     week = week if week else "N/A"
     msg = [f"Week {week} Lineup Check:"]
 
@@ -155,16 +273,49 @@ def create_message(alerts, week):
         else:
             msg.append(f"* {bye_count} starter(s) on bye week")
         msg.append("")
+
+    msg.append("League Standings:")
+    for rank, team in enumerate(standings, start=1):
+        record = f"{team['wins']}-{team['losses']}"
+        if team["ties"]:
+            record += f"-{team['ties']}"
+        msg.append(
+            f"{rank}. {team['team']} ({record}) - "
+            f"{team['points']:.2f} points"
+        )
+
+    msg.append("")
     msg.append(
         "⚠️ Please review your lineup and make any necessary changes."
     )
     return "\n".join(msg)
 
 def main():
-    print("INFO - Checking fantasy rosters...\n")
+    print("INFO - Connecting to ESPN..\n")
+    espn_data = get_espn_league_data()
+    if not espn_data:
+        print("ERROR - Could not retireve ESPN League data")
+        return
+    rosters = build_rosters(espn_data)
+    standings = build_standings(espn_data)
+    print("INFO - ESPN rosters retrieved\n")
+    print("INFO - ESPN roster players:")
+
+    for manager, roster in rosters.items():
+        print(f"\n{manager}:")
+
+        for lineup, players in roster.items():
+            lineup_label = "IR" if lineup == "ir" else lineup.title()
+            print(f"  {lineup_label}:")
+            for player in players:
+                print(
+                    f"    - {player['name']} | "
+                    f"{player['team']} | position {player['position']}"
+                )
+    print()
+
     week = input("What week number is it? ").strip()
-    print(f"INFO - Week {week} selected\n")
-    rosters = load_roster()
+    print(f"\nINFO - Week {week} selected\n")
 
     ### Injury data
     injury_data = get_injury_data()
@@ -177,7 +328,7 @@ def main():
 
     print("INFO - Alerts generated\n")
     print("INFO - Creating message...\n")
-    msg = create_message(alerts, week)
+    msg = create_message(alerts, week, standings)
 
     ## DISPLAY MESSAGE
     print("=" * 50)
