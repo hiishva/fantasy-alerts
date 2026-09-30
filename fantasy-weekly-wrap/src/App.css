@@ -91,3 +91,62 @@ h1 {
   opacity: 0.7;
   letter-spacing: 1px;
 }
+
+.snapshot-card {
+  background:
+    radial-gradient(circle at 85% 20%, #00e5ff 0, transparent 25%),
+    radial-gradient(circle at 15% 80%, #ff4d8d 0, transparent 30%),
+    linear-gradient(145deg, #ff7a00, #5a189a 75%);
+}
+
+.snapshot-label {
+  margin-top: 50px;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.big-number {
+  font-size: 150px;
+  line-height: 0.85;
+  font-weight: 900;
+  letter-spacing: -8px;
+  margin-top: 25px;
+}
+
+.big-text {
+  font-size: 42px;
+  line-height: 0.9;
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-top: 10px;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+  margin-top: 45px;
+}
+
+.stat {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 18px 10px;
+  backdrop-filter: blur(8px);
+}
+
+.stat span {
+  display: block;
+  font-size: 38px;
+  font-weight: 900;
+}
+
+.stat small {
+  display: block;
+  margin-top: 5px;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+}
