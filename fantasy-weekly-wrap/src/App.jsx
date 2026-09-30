@@ -159,25 +159,102 @@ function App() {
   }
 
   //SCREEN 4 - TEMP
-  return (
-    <div className="wrap">
-      <main className="card">
-        <div className="football">🔍</div>
-        <h1>LINEUP <br/> CHECK</h1>
+  if (screen === 3){
+    return (
+      <div className="wrap">
+        <main className="card lineup-intro-card">
+          <div className="week-label">
+            WEEK {data.week}
+          </div>
+          <div className="lineup-icon">🔍</div>
+          <div classNam="snapshot-label">LINEUPCHECK</div>
 
-        <p className="subtitle">
-          Coming next...
-        </p>
+          <h1>WHO NEEDS <br/> TO <br/> DOUBLE CHECK?</h1>
 
-        <button
-          className="start-button"
-          onClick={() => setScreen(2)}
-        >
-          ← BACK
-        </button>
-      </main>
-    </div>
-  );
+          <p className="subtitle">
+            {data.totalAlerts === 0 
+              ? "No flags this week."
+              : `${data.totalAlerts} thing${data.totalAlerts === 1 ? "" : "s"}
+              to double check across the league.`}
+          </p>
+
+          <button
+            className="start-button"
+            onClick={() => setScreen(4)}
+          >
+            SHOW ME →
+          </button>
+        </main>
+      </div>
+    );
+  }
+  if (screen === 4){
+    const team = data.teams[0];
+    return (
+      <div className="wrap">
+        <main className="card team-card">
+          <div className="week-label">
+            {team.name}
+          </div>
+
+          <div className="team-alert-count">
+            {team.alerts.length + team.byeCount}
+          </div>
+
+          <div className="snapshot-label">
+            THNGS TO DOUBLE CHECK
+          </div>
+          {team.alerts.length === 0 && team.byeCount == 0 ? (
+            <div className="clear-message">
+              <div className="clear-icon">✅</div>
+
+              <h2>LOOKING CLEAR</h2>
+              <p>No injury or bye flags for this team's starters.</p>
+            </div>
+          ) : (
+            <div className="alert-list">
+              {team.alerts.map((alert, index) => (
+                <div className="alert-item" key={index}>
+                  <div className="alert-icon">⚠️</div>
+                  <div>
+                    <div className="alert-player">
+                      {alert.player}
+                    </div>
+
+                    <div className="alert-details">
+                      {alert.position} • {alert.reason}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {team.byeCount > 0 && (
+                <div className="alert-item">
+                  <div className="alert-icon">🏖️</div>
+                  <div>
+                    <div className="alert-player">
+                      {team.byeCount} BYE WEEK
+                      {team.byeCount > 1 ? "S" : ""}
+                    </div>
+
+                    <div className="alert-details">
+                      STARTER{team.byeCount > 1 ? "S" : ""} ON BYE
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <button
+            className="start-button"
+            onClick={() => setScreen(5)}
+          >
+            NEXT TEAM →
+          </button>
+        </main>
+      </div>
+    );
+  };
 }
-
 export default App;

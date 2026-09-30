@@ -222,3 +222,83 @@ h1 {
 .rank-1 {
   background: rgba(255, 255, 255, 0.28);
 }
+.lineup-intro-card {
+  background:
+    radial-gradient(circle at 80% 15%, #00e5ff 0, transparent 25%),
+    radial-gradient(circle at 10% 80%, #ff4d8d 0, transparent 30%),
+    linear-gradient(145deg, #ff7a00, #5a189a 75%);
+}
+
+.lineup-icon {
+  font-size: 70px;
+  margin-bottom: 25px;
+}
+
+.team-card {
+  background:
+    radial-gradient(circle at 90% 10%, #ffcc00 0, transparent 25%),
+    radial-gradient(circle at 5% 85%, #00e5ff 0, transparent 30%),
+    linear-gradient(145deg, #5a189a, #16103d 80%);
+}
+
+.team-alert-count {
+  font-size: 110px;
+  line-height: 0.8;
+  font-weight: 900;
+  letter-spacing: -7px;
+  margin-top: 45px;
+}
+
+.clear-message {
+  margin-top: 40px;
+}
+
+.clear-icon {
+  font-size: 65px;
+}
+
+.clear-message h2 {
+  font-size: 42px;
+  line-height: 0.9;
+  margin: 15px 0;
+  letter-spacing: -2px;
+}
+
+.clear-message p {
+  font-size: 16px;
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+.alert-list {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+}
+
+.alert-icon {
+  font-size: 25px;
+}
+
+.alert-player {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.alert-details {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.7;
+}
