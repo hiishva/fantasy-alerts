@@ -247,6 +247,69 @@ def check_roster(roster, injury_lookup, teams_playing):
         }
     return alerts
 
+## CREATE WEEKLY WRAPPED
+def create_weekly_wrap_data(alerts, week, standings):
+    total_alerts = 0
+    injury_alerts = 0
+    bye_alerts = 0
+    teams = []
+
+    for manager, manager_data in alerts.items():
+        manager_alerts = manager_data["alerts"]
+        bye_count = manager_data["bye_count"]
+
+        total_alerts += len(manager_alerts)
+        bye_alerts += bye_count
+
+        team_alerts = []
+
+        for alert in manager_alerts:
+            reason = alert["reason"]
+
+            if reason.startswith("INJURY"):
+                injury_alerts += 1
+            team_alerts.append({
+                "player": alert["player"],
+                "team": alert["team"],
+                "position": alert["position"],
+                "reason": reason
+            })
+        teams.append({
+            "name": manager,
+            "alerts": team_alerts,
+            "byeCount": bye_count
+        })
+
+    ## Add standings info
+    standings_data = []
+
+    for rank, team in enumerate(standings, start=1):
+        standings_data.append({
+            "rank": rank,
+            "team": team["team"],
+            "wins": team["wins"],
+            "losses": team["losses"],
+            "ties": team["ties"],
+            "points": team["points"]
+
+        })
+    return{
+        "week": int(week),
+        "teamsChecked": len(teams),
+        "totalAlerts": total_alerts,
+        "injuryAlerts": injury_alerts,
+        "byeAlerts": bye_alerts,
+        "standings": standings_data,
+        "teams": teams
+    }
+
+
+## SAVE TO JSON
+def save_weekly_wrap(data):
+    with open("weekly_wrap.json", "w") as f:
+        json.dump(data, f, indent=2)
+    print("INFO - weekly_wrap.json created")
+
 ## CREATE MESSAGE
 def create_message(alerts, week, standings):
     week = week if week else "N/A"
@@ -324,9 +387,19 @@ def main():
     ### Schedule data
     schedule_data = get_schedule_data(week)
     teams_playing = build_teams_playing(schedule_data)
-    alerts = check_roster(rosters, injury_lookup, teams_playing)
+    alerts = check_roster(
+        rosters,
+        injury_lookup,
+        teams_playing
+    )
 
     print("INFO - Alerts generated\n")
+
+    ## CREATE DATA FOR WEEKLY WRAP
+    wrap_data = create_weekly_wrap_data(alerts, week, standings)
+    save_weekly_wrap(wrap_data)
+
+    print()
     print("INFO - Creating message...\n")
     msg = create_message(alerts, week, standings)
 
