@@ -150,3 +150,75 @@ h1 {
   line-height: 1.1;
   letter-spacing: 0.5px;
 }
+
+.standings-card {
+  background:
+    radial-gradient(circle at 85% 10%, #00e5ff 0, transparent 25%),
+    radial-gradient(circle at 10% 85%, #ffcc00 0, transparent 25%),
+    linear-gradient(145deg, #ec008c, #40105f 75%);
+}
+
+.standings-header {
+  margin-top: 50px;
+}
+
+.standings-header h2 {
+  margin: 15px 0 10px;
+  font-size: 72px;
+  line-height: 0.8;
+  letter-spacing: -5px;
+  font-weight: 900;
+}
+
+.standings-header p {
+  margin: 20px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.standings-list {
+  margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.standing-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+}
+
+.rank {
+  min-width: 42px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.team-info {
+  min-width: 0;
+}
+
+.team-name {
+  font-size: 16px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.record {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.rank-1 {
+  background: rgba(255, 255, 255, 0.28);
+}
