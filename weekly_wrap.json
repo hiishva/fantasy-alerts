@@ -1,0 +1,89 @@
+{
+  "week": 4,
+  "teamsChecked": 4,
+  "totalAlerts": 4,
+  "injuryAlerts": 4,
+  "byeAlerts": 0,
+  "standings": [
+    {
+      "rank": 1,
+      "team": "Diya Knows Ball",
+      "wins": 2,
+      "losses": 1,
+      "ties": 0,
+      "points": 516.1
+    },
+    {
+      "rank": 2,
+      "team": "Ishva's Impressive Team",
+      "wins": 2,
+      "losses": 1,
+      "ties": 0,
+      "points": 429.76000000000005
+    },
+    {
+      "rank": 3,
+      "team": "Khushi's Scoregasms",
+      "wins": 1,
+      "losses": 2,
+      "ties": 0,
+      "points": 445.84
+    },
+    {
+      "rank": 4,
+      "team": "ImmaWin",
+      "wins": 1,
+      "losses": 2,
+      "ties": 0,
+      "points": 416.9
+    }
+  ],
+  "teams": [
+    {
+      "name": "Ishva's Impressive Team",
+      "alerts": [
+        {
+          "player": "Breece Hall",
+          "team": "NYJ",
+          "position": 2,
+          "reason": "INJURY: QUESTIONABLE"
+        }
+      ],
+      "byeCount": 0
+    },
+    {
+      "name": "ImmaWin",
+      "alerts": [],
+      "byeCount": 0
+    },
+    {
+      "name": "Diya Knows Ball",
+      "alerts": [],
+      "byeCount": 0
+    },
+    {
+      "name": "Khushi's Scoregasms ",
+      "alerts": [
+        {
+          "player": "Josh Allen",
+          "team": "BUF",
+          "position": 1,
+          "reason": "INJURY: QUESTIONABLE"
+        },
+        {
+          "player": "De'Von Achane",
+          "team": "MIA",
+          "position": 2,
+          "reason": "INJURY: INJURED_RESERVE"
+        },
+        {
+          "player": "Justin Jefferson",
+          "team": "MIN",
+          "position": 3,
+          "reason": "INJURY: QUESTIONABLE"
+        }
+      ],
+      "byeCount": 0
+    }
+  ]
+}
