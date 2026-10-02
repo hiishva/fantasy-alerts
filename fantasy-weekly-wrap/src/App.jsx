@@ -167,7 +167,7 @@ function App() {
             WEEK {data.week}
           </div>
           <div className="lineup-icon">🔍</div>
-          <div classNam="snapshot-label">LINEUPCHECK</div>
+          <div className="snapshot-label">LINEUPCHECK</div>
 
           <h1>WHO NEEDS <br/> TO <br/> DOUBLE CHECK?</h1>
 
@@ -188,8 +188,10 @@ function App() {
       </div>
     );
   }
-  if (screen === 4){
-    const team = data.teams[0];
+  if (screen >= 4 && screen < 4 + data.teams.length) {
+    const teamIndex = screen - 4;
+    const team = data.teams[teamIndex];
+    const isLastTeam = teamIndex === data.teams.length - 1;
     return (
       <div className="wrap">
         <main className="card team-card">
@@ -202,12 +204,12 @@ function App() {
           </div>
 
           <div className="snapshot-label">
-            THNGS TO DOUBLE CHECK
+            THINGS TO DOUBLE CHECK
           </div>
           {team.alerts.length === 0 && team.byeCount == 0 ? (
             <div className="clear-message">
               <div className="clear-icon">✅</div>
-
+              <br/>
               <h2>LOOKING CLEAR</h2>
               <p>No injury or bye flags for this team's starters.</p>
             </div>
@@ -248,13 +250,30 @@ function App() {
 
           <button
             className="start-button"
-            onClick={() => setScreen(5)}
+            onClick={() => setScreen(screen + 1)}
           >
-            NEXT TEAM →
+            {isLastTeam ? "FINISH WRAP →" : "NEXT TEAM →"}
           </button>
         </main>
       </div>
     );
   };
+  return (
+    <div className="wrap">
+      <main className="card">
+        <div className="football">🏈</div>
+        <h1>
+          THAT'S <br/>A WRAP.
+        </h1>
+        <p className="subtitle">{data.teamsChecked} teams checked. <br/> See you next week.</p>
+        <button
+          className="start-button"
+          onClick={() => setScreen(0)}
+        >
+          REPLAY →
+        </button>
+      </main>
+    </div>
+  )
 }
 export default App;
