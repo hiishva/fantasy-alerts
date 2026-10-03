@@ -1,6 +1,7 @@
 import json
 import requests
 import os
+import shutil
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -89,10 +90,17 @@ def build_rosters(data):
             if not player_name:
                 continue
 
+            player_id = player.get("id")
+
             player_info = {
                 "name": player_name,
                 "team": pro_team,
-                "position": position_id
+                "position": position_id,
+                "playerId": player_id,
+                "headshot": (
+                    f"https://a.espncdn.com/i/headshots/nfl/players/full/{player_id}.png"
+                    if player_id else None
+                )
             }
 
             lineup_slot = entry.get("lineupSlotId")
@@ -224,7 +232,8 @@ def check_roster(roster, injury_lookup, teams_playing):
                     "player": player_name,
                     "team": team,
                     "position": position,
-                    "reason": "BYE WEEK"
+                    "reason": "BYE WEEK",
+                    "headshot": player.get("headshot")
                 })
                 bye_count += 1
                 continue
@@ -239,7 +248,8 @@ def check_roster(roster, injury_lookup, teams_playing):
                     "player": player_name,
                     "team": team,
                     "position": position,
-                    "reason": f"INJURY: {injury_status}"
+                    "reason": f"INJURY: {injury_status}",
+                    "headshot": player.get("headshot")
                 })
         alerts[manager] = {
             "alerts": manager_alerts,
@@ -272,7 +282,8 @@ def create_weekly_wrap_data(alerts, week, standings):
                 "player": alert["player"],
                 "team": alert["team"],
                 "position": alert["position"],
-                "reason": reason
+                "reason": reason,
+                "headshot": alert.get("headshot")
             })
         teams.append({
             "name": manager,
@@ -306,9 +317,30 @@ def create_weekly_wrap_data(alerts, week, standings):
 
 ## SAVE TO JSON
 def save_weekly_wrap(data):
-    with open("weekly_wrap.json", "w") as f:
+    backend_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "weekly_wrap.json"
+    )
+    with open(backend_file, "w") as f:
         json.dump(data, f, indent=2)
-    print("INFO - weekly_wrap.json created")
+    print(f"INFO - weekly_wrap.json created at {backend_file}")
+
+    #Copy JSON to react directory
+    frontend_file = os.path.abspath(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "..",
+            "fantasy-weekly-wrap",
+            "public",
+            "weekly_wrap.json"
+        )
+    )
+    try:
+        shutil.copy2(backend_file, frontend_file)
+        print(f"INFO - weekly_wrap.json copied to {frontend_file}")
+    except OSError as err:
+        print(f"ERROR - Could not copy weekly_wrap.json: {err}")
+    
 
 ## CREATE MESSAGE
 def create_message(alerts, week, standings):
