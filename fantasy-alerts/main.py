@@ -1,6 +1,7 @@
 import json
 import requests
 import os
+import shutil
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -316,9 +317,30 @@ def create_weekly_wrap_data(alerts, week, standings):
 
 ## SAVE TO JSON
 def save_weekly_wrap(data):
-    with open("weekly_wrap.json", "w") as f:
+    backend_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "weekly_wrap.json"
+    )
+    with open(backend_file, "w") as f:
         json.dump(data, f, indent=2)
-    print("INFO - weekly_wrap.json created")
+    print(f"INFO - weekly_wrap.json created at {backend_file}")
+
+    #Copy JSON to react directory
+    frontend_file = os.path.abspath(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "..",
+            "fantasy-weekly-wrap",
+            "public",
+            "weekly_wrap.json"
+        )
+    )
+    try:
+        shutil.copy2(backend_file, frontend_file)
+        print(f"INFO - weekly_wrap.json copied to {frontend_file}")
+    except OSError as err:
+        print(f"ERROR - Could not copy weekly_wrap.json: {err}")
+    
 
 ## CREATE MESSAGE
 def create_message(alerts, week, standings):

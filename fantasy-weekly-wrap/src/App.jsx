@@ -9,252 +9,322 @@ function App() {
     fetch("/weekly_wrap.json")
       .then((response) => response.json())
       .then((json) => setData(json))
-      .catch((error) =>
-        console.error("Could not load weekly wrap:", error)
-      );
+      .catch((error) => console.error("Error loading weekly wrap:", error));
   }, []);
 
   if (!data) {
     return (
-      <div className="wrap">
-        <main className="card">
-          <div className="loading">LOADING YOUR WEEK...</div>
-        </main>
+      <div className="app">
+        <div className="card screen screen--loading">
+          <div className="football">🏈</div>
+          <h1>LOADING...</h1>
+          <p>Getting this week's fantasy chaos together.</p>
+        </div>
       </div>
     );
   }
 
-  // SCREEN 1 - INTRO
+  const nextScreen = () => {
+    setScreen((current) => current + 1);
+  };
+
+  /*
+   * SCREEN 0 — INTRO
+   */
   if (screen === 0) {
     return (
-      <div className="wrap">
-        <main className="card">
-          <div className="week-label">WEEK {data.week}</div>
-
+      <div className="app">
+        <div className="card screen screen--intro">
           <div className="football">🏈</div>
 
-          <h1>
-            FANTASY
-            <br />
-            WEEKLY
-            <br />
-            WRAPPED
+          <h1 className="hero-title">
+            <span>FANTASY</span>
+            <span className="accent-text">WEEKLY</span>
+            <span>WRAPPED</span>
           </h1>
 
-          <p className="subtitle">
-            Your league's week, wrapped.
+          <p className="week-label">
+            WEEK {data.week}
           </p>
 
-          <button
-            className="start-button"
-            onClick={() => setScreen(1)}
-          >
-            TAP TO ENTER →
+          <p>
+            Four teams.<br />
+            One league.<br />
+            Way too much confidence.
+          </p>
+
+          <button className="start-button" onClick={nextScreen}>
+            LET'S GO →
           </button>
-
-          <div className="swipe-hint">
-            Tap. Swipe. Judge your friends.
-          </div>
-        </main>
-      </div>
-    );
-  }
-  
-  // SCREEN 2 - SNAPSHOT
-  if (screen === 1){
-    return (
-      <div className="wrap">
-        <main className="card snapshot-card">
-          <div className="week-label">WEEK {data.week}</div>
-
-          <div className="snapshot-label">
-            YOUR WEEK IN NUMBERS
-          </div>
-
-          <div className="big-number">
-            {data.teamsChecked}
-          </div>
-
-          <div className="big-text">
-            TEAMS
-            <br />
-            CHECKED
-          </div>
-
-          <div className="stats">
-            <div className="stat">
-              <span>{data.totalAlerts}</span>
-              <small> THINGS TO<br />DOUBLE-CHECK</small>
-            </div>
-
-            <div className="stat">
-              <span>{data.injuryAlerts}</span>
-              <small>INJURY<br />FLAGS</small>
-            </div>
-
-            <div className="stat">
-              <span>{data.byeAlerts}</span>
-              <small>BYE<br />FLAGS</small>
-            </div>
-          </div>
-
-          <button
-            className="start-button"
-            onClick={() => setScreen(2)}
-          >
-            SEE STANDINGS →
-          </button>
-        </main>
+        </div>
       </div>
     );
   }
 
-  // SCREEN 3 - STANDINGS
-  if (screen === 2){
+  /*
+   * SCREEN 1 — WEEK IN NUMBERS
+   */
+  if (screen === 1) {
     return (
-      <div className="wrap">
-        <main className="card standings-card">
-          <div className="week-label">
-            WEEK {data.week}
+      <div className="app">
+        <div className="card screen screen--stats">
+          <p className="eyebrow">THE WEEK IN NUMBERS</p>
+
+          <h2 className="screen-title">THE DAMAGE</h2>
+
+          <div className="stats-grid">
+            <div className="stat">
+              <div className="big-number">{data.teamsChecked}</div>
+              <div className="stat-label">TEAMS</div>
+            </div>
+
+            <div className="stat">
+              <div className="big-number">{data.totalAlerts}</div>
+              <div className="stat-label">ALERTS</div>
+            </div>
+
+            <div className="stat">
+              <div className="big-number">{data.injuryAlerts}</div>
+              <div className="stat-label">INJURY</div>
+            </div>
+
+            <div className="stat">
+              <div className="big-number">{data.byeAlerts}</div>
+              <div className="stat-label">BYE</div>
+            </div>
           </div>
 
-          <div className="standings-header">
-            <div className="snapshot-label">
-              SO... HOW'S THE LEAGUE LOOKING?
-            </div>
-            <h2>LET'S <br /> SEE.</h2>
-            <p>The standings after Week {data.week}. </p>
-          </div>
-          <div className="standings-list">
-            {data.standings.map((team) => (
-              <div className={`standing-row rank-${team.rank}`} key={team.team}>
+          <button className="start-button" onClick={nextScreen}>
+            SHOW ME →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /*
+   * SCREEN 2 — STANDINGS
+   */
+  if (screen === 2) {
+    return (
+      <div className="app">
+        <div className="card screen screen--standings">
+          <p className="eyebrow">CURRENT STANDINGS</p>
+
+          <h2 className="screen-title">WHO'S ON TOP?</h2>
+
+          <div className="standings">
+            {data.standings.map((team, index) => (
+              <div
+                className="standing-row"
+                key={team.team}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <div className="rank">
-                  #{team.rank}
+                  {team.rank}
                 </div>
-                <div className="team-info">
-                  <div className="team-name">
+
+                <div className="standing-team">
+                  <div className="standing-name">
                     {team.team}
                   </div>
 
-                  <div className="record">
-                    {team.wins} - {team.losses}
-                    {team.ties > 0 && `-${team.ties}`}
-                    {" • "}
-                    {team.points.toFixed(2)} PTS
+                  <div className="standing-record">
+                    {team.wins}-{team.losses}
+                    {team.ties ? `-${team.ties}` : ""}
                   </div>
+                </div>
+
+                <div className="standing-points">
+                  {team.points.toFixed(2)}
                 </div>
               </div>
             ))}
           </div>
 
-          <button 
-            className="start-button"
-            onClick={() => setScreen(3)}
-          >
-            CHECK THE LINEUPS →
+          <button className="start-button" onClick={nextScreen}>
+            KEEP GOING →
           </button>
-        </main>
+        </div>
       </div>
     );
   }
 
-  //SCREEN 4 - TEMP
-  if (screen === 3){
+  /*
+   * SCREEN 3 — LINEUP INTRO
+   */
+  if (screen === 3) {
     return (
-      <div className="wrap">
-        <main className="card lineup-intro-card">
-          <div className="week-label">
-            WEEK {data.week}
-          </div>
-          <div className="lineup-icon">🔍</div>
-          <div classNam="snapshot-label">LINEUPCHECK</div>
+      <div className="app">
+        <div className="card screen screen--lineup">
+          <div className="lineup-icon">🚨</div>
 
-          <h1>WHO NEEDS <br/> TO <br/> DOUBLE CHECK?</h1>
+          <p className="eyebrow">LINEUP CHECK</p>
 
-          <p className="subtitle">
-            {data.totalAlerts === 0 
-              ? "No flags this week."
-              : `${data.totalAlerts} thing${data.totalAlerts === 1 ? "" : "s"}
-              to double check across the league.`}
+          <h2 className="screen-title">
+            WHO NEEDS TO
+            <br />
+            DOUBLE CHECK?
+          </h2>
+
+          <p>
+            Let's see who has players
+            <br />
+            that need attention.
           </p>
 
-          <button
-            className="start-button"
-            onClick={() => setScreen(4)}
-          >
+          <button className="start-button" onClick={nextScreen}>
             SHOW ME →
           </button>
-        </main>
+        </div>
       </div>
     );
   }
-  if (screen === 4){
-    const team = data.teams[0];
+
+  /*
+   * SCREENS 4–7 — INDIVIDUAL TEAMS
+   */
+  if (screen >= 4 && screen <= 7) {
+    const teamIndex = screen - 4;
+    const team = data.teams[teamIndex];
+
+    if (!team) {
+      return null;
+    }
+
+    const totalTeamAlerts =
+      team.alerts.length + team.byeCount;
+
     return (
-      <div className="wrap">
-        <main className="card team-card">
-          <div className="week-label">
-            {team.name}
-          </div>
+      <div className="app">
+        <div className="card screen screen--team">
+          <p className="eyebrow">
+            TEAM {teamIndex + 1} OF {data.teams.length}
+          </p>
 
-          <div className="team-alert-count">
-            {team.alerts.length + team.byeCount}
-          </div>
+          <h2 className="screen-title">{team.name}</h2>
 
-          <div className="snapshot-label">
-            THNGS TO DOUBLE CHECK
-          </div>
-          {team.alerts.length === 0 && team.byeCount == 0 ? (
-            <div className="clear-message">
-              <div className="clear-icon">✅</div>
+          {totalTeamAlerts === 0 ? (
+            <div className="no-alerts">
+              <div className="clean-icon">✅</div>
 
-              <h2>LOOKING CLEAR</h2>
-              <p>No injury or bye flags for this team's starters.</p>
+              <h3>LOOKS GOOD</h3>
+
+              <p>
+                No flagged starters this week.
+              </p>
             </div>
           ) : (
-            <div className="alert-list">
-              {team.alerts.map((alert, index) => (
-                <div className="alert-item" key={index}>
-                  <div className="alert-icon">⚠️</div>
-                  <div>
-                    <div className="alert-player">
-                      {alert.player}
-                    </div>
+            <>
+              <p className="alert-summary">
+                {totalTeamAlerts}{" "}
+                {totalTeamAlerts === 1 ? "THING" : "THINGS"}{" "}
+                TO CHECK
+              </p>
 
-                    <div className="alert-details">
-                      {alert.position} • {alert.reason}
+              <div className="alerts">
+                {team.alerts.map((alert, index) => (
+                  <div
+                    className="alert-item alert-item--injury"
+                    key={`${alert.player}-${index}`}
+                    style={{
+                      animationDelay: `${index * 0.12}s`,
+                    }}
+                  >
+                    <div className="alert-icon" aria-hidden="true">!</div>
+
+                    <div className="alert-player-info">
+                      {alert.headshot && (
+                        <img
+                          className="player-headshot"
+                          src={alert.headshot}
+                          alt={alert.player}
+                          onError={(event) => {
+                            event.currentTarget.style.display =
+                              "none";
+                          }}
+                        />
+                      )}
+
+                      <div>
+                        <div className="alert-player">
+                          {alert.player}
+                        </div>
+
+                        <div className="alert-details">
+                          {alert.position} • {alert.reason}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
 
-              {team.byeCount > 0 && (
-                <div className="alert-item">
-                  <div className="alert-icon">🏖️</div>
-                  <div>
-                    <div className="alert-player">
-                      {team.byeCount} BYE WEEK
-                      {team.byeCount > 1 ? "S" : ""}
-                    </div>
+                {team.byeCount > 0 && (
+                  <div
+                    className="alert-item alert-item--bye"
+                    style={{
+                      animationDelay: `${
+                        team.alerts.length * 0.12
+                      }s`,
+                    }}
+                  >
+                    <div className="alert-icon" aria-hidden="true">BYE</div>
 
-                    <div className="alert-details">
-                      STARTER{team.byeCount > 1 ? "S" : ""} ON BYE
+                    <div>
+                      <div className="alert-player">
+                        {team.byeCount}{" "}
+                        {team.byeCount === 1
+                          ? "STARTER"
+                          : "STARTERS"}{" "}
+                        ON BYE
+                      </div>
+
+                      <div className="alert-details">
+                        BYE WEEK
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            </>
           )}
 
-          <button
-            className="start-button"
-            onClick={() => setScreen(5)}
-          >
-            NEXT TEAM →
+          <button className="start-button" onClick={nextScreen}>
+            NEXT →
           </button>
-        </main>
+        </div>
       </div>
     );
-  };
+  }
+
+  /*
+   * FINAL SCREEN
+   */
+  return (
+    <div className="app">
+      <div className="card screen screen--final">
+        <div className="football">🏈</div>
+
+        <p className="eyebrow">
+          WEEK {data.week}
+        </p>
+
+        <h1>
+          THAT'S
+          <br />
+          A WRAP.
+        </h1>
+
+        <p>
+          Good luck this week 👀
+        </p>
+
+        <button className="start-button" onClick={() => setScreen(0)}>
+          REPLAY ↻
+        </button>
+      </div>
+    </div>
+  );
 }
+
 export default App;
