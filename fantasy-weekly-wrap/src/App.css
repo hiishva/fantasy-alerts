@@ -273,13 +273,14 @@ h1 {
 }
 
 .clear-icon {
+  margin: 10px;
   font-size: 65px;
 }
 
 .clear-message h2 {
   font-size: 42px;
   line-height: 0.9;
-  margin: 15px 0;
+  margin: 15px 0 15px;
   letter-spacing: -2px;
 }
 

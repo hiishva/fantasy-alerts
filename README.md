@@ -1,133 +1,100 @@
 # Fantasy Alerts
 
-![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
-![Requests](https://img.shields.io/badge/Requests-HTTP%20Library-green)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 
-Fantasy Alerts checks fantasy football starters against current NFL injury data from ESPN and creates a copy-and-paste lineup message.
+Fantasy Alerts retrieves a private ESPN fantasy league's rosters and standings, checks starters against NFL injury and schedule data, prints a copy-and-paste lineup report, and generates JSON for the Fantasy Weekly Wrap web app.
 
-## Features
+## What It Does
 
-- Loads fantasy rosters from `roster.json`
-- Prompts for the fantasy football week number
-- Fetches NFL injury data from ESPN
-- Fetches the weekly NFL schedule from ESPN to check for team bye weeks
-- Flags starters listed as `QUESTIONABLE`, `DOUBTFUL`, `OUT`, `INJURY_RESERVE`, or `IR`
-- Flags starters whose team is on a bye week
-- Creates a lineup alert message for each manager
+- Reads the ESPN league ID and authentication cookies from environment variables.
+- Retrieves team rosters and standings from ESPN's fantasy football API.
+- Prompts for a week number, then retrieves NFL injury data and that week's schedule from ESPN.
+- Flags starters with injury statuses `QUESTIONABLE`, `DOUBTFUL`, `OUT`, `INJURED_RESERVE`, or `IR`, and starters whose NFL team is absent from the schedule response.
+- Prints a manager-by-manager lineup message and league standings.
+- Writes `weekly_wrap.json` for the frontend.
 
-## File Structure
+The season is currently fixed to 2026 in `fantasy-alerts/main.py`. The week is entered when the script runs. `fantasy-alerts/roster.json` is a legacy local roster file; the current script does not read it.
+
+## Repository Layout
 
 ```text
 fantasy-alerts/
-├── main.py
-├── roster.json
-├── requirements.txt
-└── README.md
+├── README.md
+├── fantasy-alerts/
+│   ├── main.py
+│   ├── test.py
+│   ├── requirements.txt
+│   └── roster.json          # legacy; not used by main.py
+└── fantasy-weekly-wrap/
+    ├── package.json
+    ├── public/
+    │   └── weekly_wrap.json
+    └── src/
 ```
 
-- `main.py` - Application logic and output generation
-- `roster.json` - Fantasy managers, starters, and bench players
-- `requirements.txt` - Python dependencies
-- `README.md` - Project documentation
+`fantasy-alerts/test.py` is a small ESPN connection diagnostic that prints league team names and IDs; it is not a unit-test suite.
 
 ## Requirements
 
-- Python 3.x
-- An internet connection for the ESPN injury API
+- Python 3
+- Node.js and npm, to run the web app
+- Internet access to ESPN APIs
+- Access to the ESPN fantasy league and its authentication cookies
 
-## Installation
+## Configuration
 
-Create and activate a virtual environment:
+Create a `.env` file in the repository root. The root `.gitignore` excludes it, so do not commit your credentials.
+
+```dotenv
+ESPN_LEAGUE_ID=your_league_id
+ESPN_SWID=your_swid_cookie
+ESPN_S2=your_espn_s2_cookie
+```
+
+Install the Python dependencies from the repository root:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+python3 -m pip install -r fantasy-alerts/requirements.txt
 ```
 
-Install the project dependency:
+## Generate Weekly Data
+
+Run the generator with the frontend's `public` directory as the working directory. The output path is relative to the current directory, and the web app fetches `/weekly_wrap.json` from this location.
 
 ```bash
-pip install -r requirements.txt
+cd fantasy-weekly-wrap/public
+python3 ../../fantasy-alerts/main.py
 ```
 
-## Roster Format
+Enter the NFL week when prompted. The script prints the lineup message and writes `fantasy-weekly-wrap/public/weekly_wrap.json`. The schedule request uses the entered week and the 2026 regular season.
 
-Roster information is stored in `roster.json`. Each manager has a `starters` list and a `bench` list:
-
-```json
-{
-  "Manager Name": {
-    "starters": [
-      {
-        "name": "Player Name",
-        "team": "TEAM",
-        "position": "QB"
-      }
-    ],
-    "bench": [
-      {
-        "name": "Bench Player",
-        "team": "TEAM",
-        "position": "RB"
-      }
-    ]
-  }
-}
-```
-
-Player names should match ESPN's `displayName` values. The current program checks `starters`; bench players are stored for roster reference but are not currently checked.
-
-## How to Run
-
-From the project directory, run:
+To check ESPN league connectivity without generating the weekly data, run from the repository root:
 
 ```bash
-python3 main.py
+python3 fantasy-alerts/test.py
 ```
 
-Enter the week number when prompted:
+## Run the Web App
 
-```text
-What week number is it? 3
+After generating `weekly_wrap.json`, start Vite:
+
+```bash
+cd fantasy-weekly-wrap
+npm install
+npm run dev
 ```
 
-## Example Output
+The app displays the generated week's summary, standings, and team lineup alerts. To create a production build, run `npm run build` from `fantasy-weekly-wrap`.
 
-```text
-INFO - Checking fantasy rosters...
+## Data and Error Handling
 
-What week number is it? 3
-INFO - Week 3 selected
-
-INFO - Alerts generated
-
-INFO - Creating message...
-
-==================================================
-COPY/PASTE MESSAGE
-==================================================
-
-Week 3 Lineup Check:
-🚨Manager Name:
-* Player Name - INJURY: QUESTIONABLE
-* Another Player - BYE WEEK
-* 1 starter(s) on bye week
-
-✅Another Manager:
-* No players flagged
-* No starters on bye week
-
-⚠️ Please review your lineup and make any necessary changes.
-
-==================================================
-```
-
-## Notes
-
-- Injury data comes from ESPN's NFL injuries API.
-- Bye-week data comes from ESPN's NFL scoreboard API.
-- A starter is marked `BYE WEEK` when their team does not appear in the schedule returned by ESPN.
-- The current schedule request is configured for the 2026 regular season, week 1. Update the `dates`, `seasontype`, and `week` parameters in `get_schedule_data()` for another season or week.
-- The program requires an active internet connection.
-- If the roster file is missing or contains invalid JSON, the program reports an error.
-- If ESPN cannot be reached, the program reports the request error and continues with no injury data.
+- ESPN supplies league rosters, standings, injury statuses, and the NFL schedule.
+- Only starters are checked; bench and injured-reserve players are retrieved but not checked for alerts.
+- A team absent from the schedule response is treated as being on a bye. If the schedule request fails, verify the request/data before relying on bye alerts.
+- If the ESPN league request fails, the script prints an error and stops. Injury and schedule request failures print an error and return empty data.
+- The generated JSON is written to the current working directory, so run the generator from `fantasy-weekly-wrap/public` for the web app to load the newly generated file.
