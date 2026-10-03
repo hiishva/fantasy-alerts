@@ -66,21 +66,40 @@ h1 {
 }
 
 .start-button {
-  margin-top: 45px;
-  width: fit-content;
-  border: none;
-  border-radius: 999px;
-  padding: 16px 25px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  cursor: pointer;
-  background: white;
-  color: #16103d;
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+
+  animation: button-glow 2.5s ease-in-out infinite;
 }
 
-.start-button:hover {
-  transform: scale(1.04);
+.start-button::after {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  content: "";
+  transform: skewX(-20deg);
+  transition: left 500ms ease;
+}
+
+.start-button:hover::after {
+  left: 140%;
+}
+
+.start-button:active {
+  transform: translateY(1px) scale(0.96);
 }
 
 .swipe-hint {
@@ -341,6 +360,7 @@ body {
   --coral: #ff7255;
   --mint: #71d9bd;
   --rule: rgba(244, 241, 223, 0.24);
+  
 
   position: relative;
   display: flex;
@@ -442,6 +462,20 @@ body {
 
 .hero-title span {
   display: block;
+  opacity: 0;
+  animation: title-line 500ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.hero-title span:nth-child(1) {
+  animation-delay: 120ms;
+}
+
+.hero-title span:nth-child(2) {
+  animation-delay: 240ms;
+}
+
+.hero-title span:nth-child(3) {
+  animation-delay: 360ms;
 }
 
 .accent-text {
@@ -492,6 +526,9 @@ body {
   margin: 0 0 20px;
   font-size: 64px;
   line-height: 1;
+  display: inline-block;
+  transform-origin: center;
+  animation: float-football 3s ease-in-out infinite;
 }
 
 .start-button {
@@ -567,7 +604,7 @@ body {
 
 .standing-row {
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) minmax(88px, auto);
+  grid-template-columns: 58px minmax(0, 1fr) minmax(88px, auto) 8px;
   align-items: center;
   gap: 16px;
   min-width: 0;
@@ -661,8 +698,8 @@ body {
   border-top: 1px solid var(--rule);
   border-radius: 0;
   background: transparent;
-  backdrop-filter: none;
-  animation: row-arrive 360ms ease-out both;
+
+  animation: alert-pop 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .alert-icon {
@@ -703,30 +740,165 @@ body {
   width: 48px;
   height: 48px;
   border: 1px solid rgba(244, 241, 223, 0.35);
+  border-radius: 50%;
   background: rgba(244, 241, 223, 0.08);
+  object-fit: contain;
+
+  animation: headshot-pop 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both;
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+
+.alert-item:hover .player-headshot {
+  transform: scale(1.08) rotate(2deg);
+  border-color: var(--accent);
 }
 
 @keyframes screen-arrive {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(28px) scale(0.98);
   }
 
-  to {
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes screen-drift {
+  0% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 30px 20px;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@keyframes float-football {
+  0% {
+    transform: translateY(0) rotate(-5deg);
+  }
+
+  50% {
+    transform: translateY(-12px) rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(-5deg);
+  }
+}
+
+@keyframes title-line {
+  0% {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes row-arrive {
-  from {
+@keyframes number-pop {
+  0% {
     opacity: 0;
-    transform: translateX(12px);
+    transform: scale(0.65);
   }
 
-  to {
+  65% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes row-arrive {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  100% {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes row-arrive-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes alert-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.94);
+  }
+
+  65% {
+    transform: translateY(-3px) scale(1.01);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes alert-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes headshot-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-8deg);
+  }
+
+  70% {
+    transform: scale(1.08) rotate(2deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes button-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(216, 243, 106, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 22px rgba(216, 243, 106, 0.22);
   }
 }
 
@@ -765,7 +937,7 @@ body {
   }
 
   .standing-row {
-    grid-template-columns: 42px minmax(0, 1fr) 74px;
+    grid-template-columns: 42px minmax(0, 1fr) 74px 8px;
     gap: 10px;
     padding: 14px 0;
   }
@@ -993,7 +1165,7 @@ body {
   }
 
   .screen--standings .standing-row {
-    grid-template-columns: 38px minmax(0, 1fr) minmax(72px, auto);
+    grid-template-columns: 38px minmax(0, 1fr) minmax(72px, auto) 8px;
     gap: 10px;
     padding: 8px 0;
   }
@@ -1020,4 +1192,64 @@ body {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+.stat {
+  animation: row-arrive-left 500ms ease-out both;
+}
+
+.stat:nth-child(1) {
+  animation-delay: 100ms;
+}
+
+.stat:nth-child(2) {
+  animation-delay: 200ms;
+}
+
+.stat:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+.stat:nth-child(4) {
+  animation-delay: 400ms;
+}
+
+.big-number {
+  animation: number-pop 550ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.standing-row {
+  animation: row-arrive 450ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.standing-row:hover {
+  transform: translateX(8px);
+  background: rgba(244, 241, 223, 0.06);
+}
+
+.standing-row:first-child::after {
+  position: static;
+  grid-column: 4;
+  align-self: center;
+  justify-self: center;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  content: "";
+  animation: alert-pulse 1.8s ease-in-out infinite;
+}
+.alert-item--injury {
+  --alert-color: var(--coral);
+}
+
+.alert-item--bye {
+  --alert-color: var(--lime);
+}
+
+.alert-icon {
+  animation: alert-pulse 1.8s ease-in-out infinite;
+  animation-delay: 600ms;
 }
