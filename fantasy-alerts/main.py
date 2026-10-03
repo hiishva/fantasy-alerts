@@ -89,10 +89,17 @@ def build_rosters(data):
             if not player_name:
                 continue
 
+            player_id = player.get("id")
+
             player_info = {
                 "name": player_name,
                 "team": pro_team,
-                "position": position_id
+                "position": position_id,
+                "playerId": player_id,
+                "headshot": (
+                    f"https://a.espncdn.com/i/headshots/nfl/players/full/{player_id}.png"
+                    if player_id else None
+                )
             }
 
             lineup_slot = entry.get("lineupSlotId")
@@ -224,7 +231,8 @@ def check_roster(roster, injury_lookup, teams_playing):
                     "player": player_name,
                     "team": team,
                     "position": position,
-                    "reason": "BYE WEEK"
+                    "reason": "BYE WEEK",
+                    "headshot": player.get("headshot")
                 })
                 bye_count += 1
                 continue
@@ -239,7 +247,8 @@ def check_roster(roster, injury_lookup, teams_playing):
                     "player": player_name,
                     "team": team,
                     "position": position,
-                    "reason": f"INJURY: {injury_status}"
+                    "reason": f"INJURY: {injury_status}",
+                    "headshot": player.get("headshot")
                 })
         alerts[manager] = {
             "alerts": manager_alerts,
@@ -272,7 +281,8 @@ def create_weekly_wrap_data(alerts, week, standings):
                 "player": alert["player"],
                 "team": alert["team"],
                 "position": alert["position"],
-                "reason": reason
+                "reason": reason,
+                "headshot": alert.get("headshot")
             })
         teams.append({
             "name": manager,
