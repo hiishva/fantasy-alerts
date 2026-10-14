@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 function App() {
   const [data, setData] = useState(null);
   const [screen, setScreen] = useState(0);
+  const [theme, setTheme] = useState("stadium");
+  const themeInitialized = useRef(false);
 
   useEffect(() => {
     fetch("/weekly_wrap.json")
@@ -12,9 +14,39 @@ function App() {
       .catch((error) => console.error("Error loading weekly wrap:", error));
   }, []);
 
+  useEffect(() => {
+    if (themeInitialized.current) {
+      return;
+    }
+    themeInitialized.current = true;
+
+    const themes = ["stadium", "violet", "sunset", "ice"];
+    let previousTheme;
+
+    try {
+      previousTheme = window.localStorage.getItem("weekly-wrap-theme");
+    } catch (error) {
+      console.warn("Unable to read the previous weekly-wrap theme:", error);
+    }
+
+    const availableThemes = themes.filter((candidate) => candidate !== previousTheme);
+    const nextTheme =
+      availableThemes[Math.floor(Math.random() * availableThemes.length)];
+
+    setTheme(nextTheme);
+
+    try {
+      window.localStorage.setItem("weekly-wrap-theme", nextTheme);
+    } catch (error) {
+      console.warn("Unable to save the weekly-wrap theme:", error);
+    }
+  }, []);
+
+  const appClassName = `app theme-${theme}`;
+
   if (!data) {
     return (
-      <div className="app">
+      <div className={appClassName}>
         <div className="card screen screen--loading">
           <div className="football">🏈</div>
           <h1>LOADING...</h1>
@@ -33,7 +65,7 @@ function App() {
    */
   if (screen === 0) {
     return (
-      <div className="app">
+      <div className={appClassName}>
         <div className="card screen screen--intro">
           <div className="football">🏈</div>
 
@@ -66,7 +98,7 @@ function App() {
    */
   if (screen === 1) {
     return (
-      <div className="app">
+      <div className={appClassName}>
         <div className="card screen screen--stats">
           <p className="eyebrow">THE WEEK IN NUMBERS</p>
 
@@ -107,7 +139,7 @@ function App() {
    */
   if (screen === 2) {
     return (
-      <div className="app">
+      <div className={appClassName}>
         <div className="card screen screen--standings">
           <p className="eyebrow">CURRENT STANDINGS</p>
 
@@ -155,7 +187,7 @@ function App() {
    */
   if (screen === 3) {
     return (
-      <div className="app">
+      <div className={appClassName}>
         <div className="card screen screen--lineup">
           <div className="lineup-icon">🚨</div>
 
@@ -196,7 +228,7 @@ function App() {
       team.alerts.length + team.byeCount;
 
     return (
-      <div className="app">
+      <div className={appClassName}>
         <div className="card screen screen--team">
           <p className="eyebrow">
             TEAM {teamIndex + 1} OF {data.teams.length}
@@ -301,7 +333,7 @@ function App() {
    * FINAL SCREEN
    */
   return (
-    <div className="app">
+    <div className={appClassName}>
       <div className="card screen screen--final">
         <div className="football">🏈</div>
 

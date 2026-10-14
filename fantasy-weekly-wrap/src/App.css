@@ -361,7 +361,7 @@ body {
   --coral: #ff7255;
   --mint: #71d9bd;
   --rule: rgba(244, 241, 223, 0.24);
-  
+  --grid-line: rgba(244, 241, 223, 0.07);
 
   position: relative;
   display: flex;
@@ -377,7 +377,70 @@ body {
       90deg,
       transparent 0,
       transparent 79px,
-      rgba(244, 241, 223, 0.07) 80px,
+      var(--grid-line) 80px,
+      transparent 81px
+    );
+}
+
+.app.theme-violet {
+  --ink: #211535;
+  --paper: #f8efff;
+  --lime: #e3a8ff;
+  --coral: #ff7b9c;
+  --mint: #8fe9c4;
+  --rule: rgba(248, 239, 255, 0.24);
+  --grid-line: rgba(248, 239, 255, 0.08);
+
+  background-image:
+    radial-gradient(ellipse at 85% 15%, rgba(143, 79, 190, 0.3), transparent 34%),
+    radial-gradient(ellipse at 10% 85%, rgba(255, 123, 156, 0.12), transparent 32%),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0,
+      transparent 79px,
+      var(--grid-line) 80px,
+      transparent 81px
+    );
+}
+
+.app.theme-sunset {
+  --ink: #301b22;
+  --paper: #fff0d9;
+  --lime: #ffd166;
+  --coral: #ff8066;
+  --mint: #90d9bd;
+  --rule: rgba(255, 240, 217, 0.25);
+  --grid-line: rgba(255, 240, 217, 0.07);
+
+  background-image:
+    radial-gradient(ellipse at 78% 12%, rgba(255, 128, 102, 0.2), transparent 35%),
+    radial-gradient(ellipse at 12% 88%, rgba(255, 209, 102, 0.12), transparent 32%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 79px,
+      var(--grid-line) 80px,
+      transparent 81px
+    );
+}
+
+.app.theme-ice {
+  --ink: #102638;
+  --paper: #e8f7ff;
+  --lime: #73f0dc;
+  --coral: #ff8ba7;
+  --mint: #90b8ff;
+  --rule: rgba(232, 247, 255, 0.25);
+  --grid-line: rgba(232, 247, 255, 0.08);
+
+  background-image:
+    radial-gradient(ellipse at 82% 16%, rgba(45, 130, 174, 0.28), transparent 35%),
+    radial-gradient(ellipse at 12% 84%, rgba(115, 240, 220, 0.1), transparent 32%),
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 79px,
+      var(--grid-line) 80px,
       transparent 81px
     );
 }
@@ -386,7 +449,7 @@ body {
   position: fixed;
   z-index: 0;
   inset: 18px;
-  border: 1px solid rgba(244, 241, 223, 0.17);
+  border: 1px solid var(--rule);
   content: "";
   pointer-events: none;
 }
