@@ -11,6 +11,7 @@ Fantasy Alerts retrieves a private ESPN fantasy league's rosters and standings, 
 
 - Reads the ESPN league ID and authentication cookies from environment variables.
 - Retrieves team rosters and standings from ESPN's fantasy football API.
+- Retrieves the five highest-scoring rostered players for the selected week.
 - Prompts for a week number, then retrieves NFL injury data and that week's schedule from ESPN.
 - Flags starters with injury statuses `QUESTIONABLE`, `DOUBTFUL`, `OUT`, `INJURED_RESERVE`, or `IR`, and starters whose NFL team is absent from the schedule response.
 - Prints a manager-by-manager lineup message and league standings.
@@ -89,7 +90,7 @@ npm install
 npm run dev
 ```
 
-The app displays the generated week's summary, standings, and team lineup alerts. To create a production build, run `npm run build` from `fantasy-weekly-wrap`.
+The app displays the generated week's summary, standings, a weekly top-scorers leaderboard, and team lineup alerts. The leaderboard appears when ESPN returns weekly player scores. To create a production build, run `npm run build` from `fantasy-weekly-wrap`.
 
 ## Data and Error Handling
 

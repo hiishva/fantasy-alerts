@@ -490,6 +490,10 @@ body {
   --accent: var(--coral);
 }
 
+.screen--top-scorers {
+  --accent: var(--lime);
+}
+
 .screen--lineup {
   --accent: var(--mint);
 }
@@ -713,6 +717,64 @@ body {
   color: var(--paper);
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-size: 22px;
+  text-align: right;
+}
+
+.top-scorers {
+  border-bottom: 1px solid var(--rule);
+}
+
+.scorer-row {
+  display: grid;
+  grid-template-columns: 38px 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 13px 0;
+  border-top: 1px solid var(--rule);
+  animation: row-arrive 360ms ease-out both;
+}
+
+.scorer-rank {
+  color: var(--accent);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.scorer-headshot {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: rgba(244, 241, 223, 0.08);
+  object-fit: contain;
+}
+
+.scorer-info {
+  min-width: 0;
+}
+
+.scorer-name {
+  overflow: hidden;
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scorer-team {
+  margin-top: 4px;
+  color: rgba(244, 241, 223, 0.64);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.scorer-points {
+  color: var(--paper);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 20px;
   text-align: right;
 }
 
@@ -1016,6 +1078,29 @@ body {
 
   .standing-points {
     font-size: 18px;
+  }
+
+  .scorer-row {
+    grid-template-columns: 30px 40px minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 11px 0;
+  }
+
+  .scorer-headshot {
+    width: 38px;
+    height: 38px;
+  }
+
+  .scorer-rank {
+    font-size: 24px;
+  }
+
+  .scorer-name {
+    font-size: 13px;
+  }
+
+  .scorer-points {
+    font-size: 17px;
   }
 }
 

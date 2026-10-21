@@ -59,6 +59,8 @@ function App() {
   const nextScreen = () => {
     setScreen((current) => current + 1);
   };
+  const hasTopScorers = data.topScorers?.length > 0;
+  const teamStartScreen = hasTopScorers ? 5 : 4;
 
   /*
    * SCREEN 0 — INTRO
@@ -183,9 +185,60 @@ function App() {
   }
 
   /*
-   * SCREEN 3 — LINEUP INTRO
+   * SCREEN 3 — TOP SCORERS
    */
-  if (screen === 3) {
+  if (hasTopScorers && screen === 3) {
+    return (
+      <div className={appClassName}>
+        <div className="card screen screen--top-scorers">
+          <p className="eyebrow">WEEK {data.week} LEADERBOARD</p>
+
+          <h2 className="screen-title">TOP 5 PLAYERS</h2>
+
+          <div className="top-scorers">
+            {data.topScorers.slice(0, 5).map((scorer, index) => (
+              <div
+                className="scorer-row"
+                key={`${scorer.player}-${scorer.team}`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="scorer-rank">{index + 1}</div>
+
+                {scorer.headshot && (
+                  <img
+                    className="scorer-headshot"
+                    src={scorer.headshot}
+                    alt=""
+                    onError={(event) => {
+                      event.currentTarget.style.display = "none";
+                    }}
+                  />
+                )}
+
+                <div className="scorer-info">
+                  <div className="scorer-name">{scorer.player}</div>
+                  <div className="scorer-team">{scorer.team}</div>
+                </div>
+
+                <div className="scorer-points">
+                  {scorer.points.toFixed(2)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button className="start-button" onClick={nextScreen}>
+            TEAM CHECKS →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /*
+   * LINEUP INTRO
+   */
+  if (screen === (hasTopScorers ? 4 : 3)) {
     return (
       <div className={appClassName}>
         <div className="card screen screen--lineup">
@@ -214,10 +267,13 @@ function App() {
   }
 
   /*
-   * SCREENS 4–7 — INDIVIDUAL TEAMS
+   * INDIVIDUAL TEAMS
    */
-  if (screen >= 4 && screen <= 7) {
-    const teamIndex = screen - 4;
+  if (
+    screen >= teamStartScreen &&
+    screen < teamStartScreen + data.teams.length
+  ) {
+    const teamIndex = screen - teamStartScreen;
     const team = data.teams[teamIndex];
 
     if (!team) {

@@ -41,7 +41,7 @@ NFL_TEAM_ABBREVIATIONS = {
 }
 
 ## LOAD ROSTER
-def get_espn_league_data():
+def get_espn_league_data(scoring_period_id=None):
     cookies = {
         "SWID": ESPN_SWID,
         "espn_s2": ESPN_S2
@@ -56,13 +56,15 @@ def get_espn_league_data():
     }
 
     try:
+        params = {"view": ["mTeam", "mRoster"]}
+        if scoring_period_id is not None:
+            params["scoringPeriodId"] = scoring_period_id
+
         response = requests.get(
             ESPN_URL,
             cookies=cookies,
             headers=headers,
-            params={
-                "view": ["mTeam", "mRoster"]
-            },
+            params=params,
             timeout=10
         )
         response.raise_for_status()
@@ -141,6 +143,57 @@ def build_standings(data):
     )
 
     return standings
+
+
+def build_top_scorers(data, week, limit=5):
+    team_names = {
+        team.get("id"): team.get("name", "Unknown Team").strip()
+        for team in data.get("teams", [])
+    }
+    top_scorers = []
+    scoring_period_id = int(week)
+
+    for team in data.get("teams", []):
+        team_name = team_names.get(team.get("id"))
+        roster_entries = team.get("roster", {}).get("entries", [])
+
+        for entry in roster_entries:
+            player_pool_entry = entry.get("playerPoolEntry", {})
+            player = player_pool_entry.get("player", {})
+            player_name = player.get("fullName")
+            score = player_pool_entry.get("appliedStatTotal")
+
+            if score is None:
+                for stat in player.get("stats", []):
+                    if (
+                        stat.get("scoringPeriodId") == scoring_period_id
+                        and stat.get("statSourceId") == 0
+                    ):
+                        score = stat.get("appliedTotal")
+                        break
+
+            if not player_name or not team_name or score is None:
+                continue
+
+            try:
+                points = float(score)
+            except (TypeError, ValueError):
+                continue
+
+            player_id = player.get("id")
+            top_scorers.append({
+                "player": player_name,
+                "team": team_name,
+                "position": player.get("defaultPositionId"),
+                "points": points,
+                "headshot": (
+                    f"https://a.espncdn.com/i/headshots/nfl/players/full/{player_id}.png"
+                    if player_id else None
+                )
+            })
+
+    top_scorers.sort(key=lambda scorer: (-scorer["points"], scorer["player"]))
+    return top_scorers[:limit]
 
 # def load_roster():
 #     try:
@@ -258,7 +311,7 @@ def check_roster(roster, injury_lookup, teams_playing):
     return alerts
 
 ## CREATE WEEKLY WRAPPED
-def create_weekly_wrap_data(alerts, week, standings):
+def create_weekly_wrap_data(alerts, week, standings, top_scorers=None):
     total_alerts = 0
     injury_alerts = 0
     bye_alerts = 0
@@ -311,6 +364,7 @@ def create_weekly_wrap_data(alerts, week, standings):
         "injuryAlerts": injury_alerts,
         "byeAlerts": bye_alerts,
         "standings": standings_data,
+        "topScorers": top_scorers or [],
         "teams": teams
     }
 
@@ -412,6 +466,11 @@ def main():
     week = input("What week number is it? ").strip()
     print(f"\nINFO - Week {week} selected\n")
 
+    scoring_data = get_espn_league_data(week)
+    top_scorers = build_top_scorers(scoring_data, week) if scoring_data else []
+    if not top_scorers:
+        print("INFO - No weekly player scores were available for the wrap\n")
+
     ### Injury data
     injury_data = get_injury_data()
     injury_lookup = build_injury_lookup(injury_data)
@@ -428,7 +487,12 @@ def main():
     print("INFO - Alerts generated\n")
 
     ## CREATE DATA FOR WEEKLY WRAP
-    wrap_data = create_weekly_wrap_data(alerts, week, standings)
+    wrap_data = create_weekly_wrap_data(
+        alerts,
+        week,
+        standings,
+        top_scorers
+    )
     save_weekly_wrap(wrap_data)
 
     print()
